@@ -6,12 +6,25 @@ const cleanCSS = require("gulp-clean-css");
 const postcss = require("gulp-postcss");
 const browsersync = require("browser-sync");
 
-const dist = "./dist";
+
+
+
+const dist = "/Applications/MAMP/htdocs/food";
+
+
+
+
 
 gulp.task("copy-html", () => {
     return gulp.src("./src/index.html")
                 .pipe(gulp.dest(dist))
                 .pipe(browsersync.stream());
+});
+
+gulp.task("copy-server", () => {
+  return gulp.src("server.php")
+              .pipe(gulp.dest(dist))
+              .pipe(browsersync.stream());
 });
 
 gulp.task("build-js", () => {
@@ -64,7 +77,7 @@ gulp.task("copy-assets", () => {
 
 gulp.task("watch", () => {
     browsersync.init({
-		server: "./dist/",
+		server: "./dist",
 		port: 4000,
 		notify: true
     });
@@ -74,9 +87,11 @@ gulp.task("watch", () => {
     gulp.watch("./src/img/**/*.*", gulp.parallel("copy-assets"));
     gulp.watch("./src/scss/**/*.scss", gulp.parallel("build-sass"));
     gulp.watch("./src/js/**/*.js", gulp.parallel("build-js"));
+    gulp.watch("server.php", gulp.parallel("copy-server"));
+    
 });
 
-gulp.task("build", gulp.parallel("copy-html", "copy-assets", "build-sass", "build-js"));
+gulp.task("build", gulp.parallel("copy-html", "copy-assets", "build-sass", "build-js","copy-server" ));
 
 gulp.task("prod", () => {
     gulp.src("./src/index.html")
@@ -85,6 +100,8 @@ gulp.task("prod", () => {
         .pipe(gulp.dest(dist + "/img"));
     gulp.src("./src/icons/**/*.*")
         .pipe(gulp.dest(dist + "/icons"));
+    gulp.src("server.php")
+        .pipe(gulp.dest(dist));
 
     gulp.src("./src/js/main.js")
         .pipe(webpack({
@@ -118,6 +135,9 @@ gulp.task("prod", () => {
         .pipe(postcss([autoprefixer()]))
         .pipe(cleanCSS())
         .pipe(gulp.dest(dist + '/css'));
+        
 });
 
 gulp.task("default", gulp.parallel("watch", "build"));
+
+

@@ -266,7 +266,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
   new MenuCart("img/tabs/vegy.jpg", "vegy", 'Меню "Фитнес"', 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 9, '.menu .container', 'menu__item').render();
   new MenuCart("img/tabs/elite.jpg", "elite", 'Меню “Премиум”', 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!', 24, '.menu .container').render();
-  new MenuCart("img/tabs/post.jpg", "post", 'Меню "Постное"', 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков. ', 20, '.menu .container').render();
+  new MenuCart("img/tabs/post.jpg", "post", 'Меню "Постное"', 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков. ', 20, '.menu .container').render(); //form
+
+  const forms = document.querySelectorAll('form');
+  const messange = {
+    loading: 'Загрузка',
+    success: 'Спасибо! Скоро мы с вами свяжемся',
+    failure: 'Что то пошло не так...'
+  };
+  forms.forEach(item => {
+    postData(item);
+  });
+
+  function postData(form) {
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const statusMessange = document.createElement('div');
+      statusMessange.classList.add('status');
+      statusMessange.textContent = messange.loading;
+      form.append(statusMessange);
+      const request = new XMLHttpRequest();
+      request.open('POST', 'server.php');
+      const formData = new FormData(form);
+      request.send(formData);
+      request.addEventListener('load', () => {
+        if (request.status === 200) {
+          console.log(request.response);
+          statusMessange.textContent = messange.success;
+        } else {
+          statusMessange.textContent = messange.failure;
+        }
+      });
+    });
+  }
 });
 
 /***/ })

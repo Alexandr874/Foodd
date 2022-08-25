@@ -258,6 +258,81 @@ document.addEventListener('DOMContentLoaded', () => {
             ).render();
 
 
+            //form
+
+
+         const forms = document.querySelectorAll('form');
+
+            const messange = { 
+
+                loading: 'Загрузка',
+                success: 'Спасибо! Скоро мы с вами свяжемся',
+                failure: 'Что то пошло не так...'
+
+            };
+
+            forms.forEach(item => {
+                postData(item);
+
+            });
+
+            function postData(form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+
+                    const statusMessange = document.createElement('div'); 
+                    statusMessange.classList.add('status');
+                    statusMessange.textContent = messange.loading; 
+                    form.append(statusMessange);
+
+                    const request = new XMLHttpRequest();
+                    request.open('POST', 'server.php');
+
+                    request.setRequestHeader('Content-type', 'aplication/json');// в формате
+                    //(json) необходимо указывать в каком формате будет уходить запрос на 
+                    // сервер
+
+                    const formData = new FormData(form);
+                    // для того что бы использовать объкт (FormData) в формате (json) необходимо
+                    // сделать манипуляции, мы должны создать пустой объект, а потом перебрать
+                    // все (FormData)
+
+                    const object = {}; // создали пустой объкт
+                    formData.forEach(function(value, key){ //прогнали (FormData) через (forEach)
+                        object[key] = value;
+                    });
+                
+                    const json = JSON.stringify(object);// переделали (object) в формат
+                    // (JSON), можно и не создавть переменную (json),мы перевели в формат для
+                    // наглядности , а можно было сразу же отправить (object) в  request.send
+                
+                    request.send(json); // отправили его на сервер
+
+                    request.addEventListener('load', () => {
+
+                        if(request.status === 200) {
+                            console.log(request.response);
+                            statusMessange.textContent = messange.success;
+                            form.reset(); // сбрасываем форму, что бы сообщение не висело
+                            setTimeout(() => { // удалили блок (statusMessange) через 2сек
+                                statusMessange.remove();
+                            }, 2000);
+
+                        } else {
+                            statusMessange.textContent = messange.failure;
+                        }
+
+                    });
+
+
+                });
+            }
+ 
+ 
+
+
+    
+
 
 
 
